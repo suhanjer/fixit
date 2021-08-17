@@ -59,3 +59,6 @@ def register_view(request):
 
     else:
         return render(request, "fix/register.html")
+
+def points(request):
+    
