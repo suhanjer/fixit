@@ -1,0 +1,18 @@
+{% extends "fix/layout.html" %}
+
+{% block head %}
+    <title>Log in</title>
+{% endblock %}
+
+{% block body %}
+    <div>Добро пожаловать!</div>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <input autofocus type="text", name="username", placeholder="Username">
+        <input type="password" name="password", placeholder="password">
+        <input type="submit" value="Login">
+    </form>
+    {% if message %}
+        {{ message }}
+    {% endif %}
+{% endblock %}

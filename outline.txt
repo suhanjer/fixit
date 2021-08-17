@@ -1,0 +1,21 @@
+Models:
+    -Users
+
+    -Issue:
+        author foreignkey Users
+        executor foreignkey Users
+        coordinates: x,y
+        description
+        photos
+        open-date
+        close-date
+
+    -Coordinates:
+        issue foreignkey
+        x
+        y
+
+    -Chat:
+        issue foreignkey
+        user foreignkey Users
+        date
