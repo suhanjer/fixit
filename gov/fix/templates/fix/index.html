@@ -6,7 +6,7 @@
     <script src="{% static 'fix/loader.js' %}"></script>
     <link rel="stylesheet" href="{% static 'fix/MarkerCluster.css' %}">
     <link rel="stylesheet" href="{% static 'fix/MarkerCluster.Default.css' %}">
-    <script src="{% static 'fix/almaty_coordinates.js' %}"></script>
+    <script src="{% static 'fix/coordinates.js' %}"></script>
 {% endblock %}
 
 {% block body %}
@@ -32,7 +32,7 @@
             }).then(function() {
                 map = DG.map('map', {
                     center: DG.latLng(43.246988, 76.903344),
-                    zoom: 9
+                    zoom: 12
                 });
 
                 var markers = DG.markerClusterGroup();

@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db import IntegrityError
 from .models import *
@@ -61,4 +61,8 @@ def register_view(request):
         return render(request, "fix/register.html")
 
 def points(request):
-    
+    data = Issue.objects.all()
+    points = []
+    for i in data:
+        points.append([i.x, i.y, f'{i.title}'])
+    return JsonResponse(points, safe=False)
