@@ -15,10 +15,10 @@ class Issue(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_closed = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=1, choices=STATUS)
+    image = models.ImageField(upload_to="images", blank=True, null=True)
 
-
-    x = models.FloatField()
-    y = models.FloatField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
     def __str__(self):
         return self.title
