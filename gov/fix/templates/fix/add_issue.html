@@ -24,7 +24,6 @@
                 map.locate({setView: true, watch: true})
                     .on('locationfound', function(e) {
                         DG.marker([e.latitude, e.longitude]).addTo(map);
-                        document.querySelector("#id_author").value = document.querySelector("#user").innerHTML;
                         document.querySelector("#id_latitude").value = e.latitude;
                         document.querySelector("#id_longitude").value = e.longitude;
                     })
@@ -37,7 +36,7 @@
             });
         });
     </script>
-    <form action="{% url 'add_issue' %}" method="post">
+    <form action="{% url 'add_issue' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Submit">

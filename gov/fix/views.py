@@ -4,20 +4,20 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db import IntegrityError
 from .models import *
-from django.core.files.storage import FileSystemStorage
 
 from django import forms
 
 class IssueForm(forms.ModelForm):
-    author = forms.IntegerField(label="Author")
-    title = forms.CharField(label="Title")
-    description = forms.CharField(label="Description")
-    latitude = forms.FloatField(label="latitude")
-    longitude = forms.FloatField(label="longitude")
-
     class Meta:
         model = Issue
-        fields = ('author', 'title', 'description', 'image')
+        fields = ('title', 'description', 'latitude', 'longitude', 'image')
+
+    def CustomSave(self, user):
+        data = self.save(commit=False)
+        data.author = user
+        data.status = 'N'
+        data.save()
+        return data
 
 # Create your views here.
 def index(request):
@@ -84,23 +84,13 @@ def points(request):
 def add_issue(request):
     if request.method == "POST":
         form = IssueForm(request.POST, request.FILES)
+        print(form.errors)
+        
         if form.is_valid():
-            #title = form.cleaned_data["title"]
-            #description = form.cleaned_data["description"]
-            #latitude = float(form.cleaned_data["latitude"])
-            #longitude = float(form.cleaned_data["longitude"])
-
-
-            form.cleaned_data["author"] = request.user
-            print('befor save')
-            form.save()
-            print('after save')
-            img_object = form.instance
-            print('img_object')
-
-        #issue = Issue(author=request.user, title=title, description=description, status='N', latitude=latitude, longitude=longitude)
-        #issue.save()
-        return HttpResponseRedirect(reverse("issue_page", args=[issue.id]))
+            value = form.CustomSave(request.user)
+        else:
+            print('form is invalid')
+        return HttpResponseRedirect(reverse("issue_page", args=[value.id]))
     else:
         return render(request, "fix/add_issue.html", {
             "form": IssueForm(),

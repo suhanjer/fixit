@@ -3,35 +3,60 @@
 
 {% block head %}
     <title>{{ issue_data.title }}</title>
+    <script src="https://maps.api.2gis.ru/2.0/loader.js"></script>
 {% endblock %}
 
 {% block body %}
-    <div id="map" style="width: 100%; height: 500px;"></div>
-    <script>
-        DG.then(function() {
-            // загрузка кода модуля
-            return DG.plugin("{% static 'fix/leaflet.markercluster.js' %}");
-        }).then(function() {
-            map = DG.map('map', {
-                center: DG.latLng(43.246988, 76.903344),
-                zoom: 12
-            });
-
-            var markers = DG.markerClusterGroup();
-            console.log(addressPoints);
-
-            // обработка координат для установки маркеров
-            for (var i = 0; i < addressPoints.length; i++) {
-                var a = addressPoints[i];
-                var title = a[2];
-                var marker = DG.marker([a[0], a[1]], { title: title });
-                marker.bindPopup(title);
-                markers.addLayer(marker);
-            }
-
-            map.addLayer(markers);
-        });
-    </script>
-    {{ issue_data.image.url }}
     <img src="{{ issue_data.image.url }}" alt="image" style="max-height:300px">
+    <h1>{{ issue_data.title }}</h1>
+    <p>{{ issue_data.description }}</p>
+
+    <!-- Map section -->
+    <input id="create" type="button" value="Show on map">
+    <input id="update" type="button" value="Update" hidden>
+    <p>Pin coordinates: <div id="location">{{ issue_data.latitude }}, {{ issue_data.longitude }}</div></p>
+    <div id="mapBlock"></div>
+    <script>
+        var createButton = document.getElementById('create');
+        var locationInfo = document.getElementById('location');
+        var updateButton = document.getElementById('update');
+        var lat, lng;
+
+        createButton.onclick = function() {
+            var container = document.createElement('div'),
+                mapBlock = document.getElementById('mapBlock');
+
+            container.id = 'map';
+            container.style.width = '100%';
+            container.style.height = '400px';
+            mapBlock.appendChild(container);
+
+            DG.then(function(){
+                var map, marker;
+                map = DG.map('map', {
+                    center: [{{ issue_data.latitude }}, {{ issue_data.longitude }}],
+                    zoom: 16
+                });
+                if ('{{ user }}' == '{{ issue_data.author }}') {
+                    marker = DG.marker([{{ issue_data.latitude }}, {{ issue_data.longitude }}], {
+                        draggable: true
+                    }).addTo(map);
+
+                    marker.on('drag', function(e) {
+                        updateButton.removeAttribute('hidden');
+                        lat = e.target._latlng.lat;
+                        lng = e.target._latlng.lng;
+
+                        locationInfo.innerHTML = lat + ', ' + lng;
+                    });
+                } else {
+                    DG.marker([{{ issue_data.latitude }}, {{ issue_data.longitude }}]).addTo(map).bindPopup('{{ issue_data.title }}');
+                }
+            });
+        }
+
+        updateButton.onclick = function() {
+            console.log(lat);
+        }
+    </script>
 {% endblock %}
