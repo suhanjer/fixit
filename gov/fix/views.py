@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse    
 from django.urls import reverse
 from django.db import IntegrityError
 from .models import *
@@ -74,11 +74,12 @@ def register_view(request):
     else:
         return render(request, "fix/register.html")
 
+#returns coordinates for index page
 def points(request):
     data = Issue.objects.all()
     points = []
     for i in data:
-        points.append([i.latitude, i.longitude, f'{i.title}'])
+        points.append([i.latitude, i.longitude, f'{i.title}', i.id])
     return JsonResponse(points, safe=False)
 
 def add_issue(request):
@@ -97,8 +98,25 @@ def add_issue(request):
         })
 
 def issue_page(request, issue_id):
+    print('issue page', issue_id)
     issue_data = Issue.objects.get(pk=issue_id)
-    print(issue_data.image)
     return render(request, "fix/issue_page.html", {
         "issue_data": issue_data,
     })
+
+def update_coordinates(request, issue_id):
+    latitude = request.GET.get("latitude")
+    longitude = request.GET.get("longitude")
+    issue = Issue.objects.get(pk=issue_id)
+    issue.latitude = latitude
+    issue.longitude = longitude
+    issue.save()
+    return HttpResponse("success")
+
+def remove(request, issue_id):
+    issue = Issue.objects.get(pk=issue_id)
+    if issue.status == 'N':
+        issue.delete()
+        return HttpResponse("success")
+    else:
+        return HttpResponse("fail")

@@ -43,7 +43,7 @@
                     var a = addressPoints[i];
                     var title = a[2];
                     var marker = DG.marker([a[0], a[1]], { title: title });
-                    marker.bindPopup(title);
+                    marker.bindPopup(`<a href="/issue_page/${a[3]}">${title}</a>`);
                     markers.addLayer(marker);
                 }
 

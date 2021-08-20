@@ -9,6 +9,9 @@
 {% block body %}
     <img src="{{ issue_data.image.url }}" alt="image" style="max-height:300px">
     <h1>{{ issue_data.title }}</h1>
+    {% if issue_data.author == request.user %}
+        <input id="remove" type="button" value="Remove">
+    {% endif %}
     <p>{{ issue_data.description }}</p>
 
     <!-- Map section -->
@@ -16,10 +19,14 @@
     <input id="update" type="button" value="Update" hidden>
     <p>Pin coordinates: <div id="location">{{ issue_data.latitude }}, {{ issue_data.longitude }}</div></p>
     <div id="mapBlock"></div>
+{% endblock %}
+
+{% block scriptend %}
     <script>
         var createButton = document.getElementById('create');
         var locationInfo = document.getElementById('location');
         var updateButton = document.getElementById('update');
+        var removeButton = document.getElementById('remove');
         var lat, lng;
 
         createButton.onclick = function() {
@@ -54,9 +61,36 @@
                 }
             });
         }
-
         updateButton.onclick = function() {
-            console.log(lat);
+            issue_id = {{ issue_data.id }};
+            fetch(`/update_coordinates/${issue_id}?latitude=${lat}&longitude=${lng}`)
+            .then(response => response.text())
+            .then(data => {
+                if (data == "success") {
+                    alert('Pin position has been updated');
+                    updateButton.setAttribute("hidden", "");
+                }
+            })
+            .catch(error => {
+                console.log('Erroru:', error);
+            });
         }
-    </script>
+        removeButton.onclick = function() {
+            issue_id = {{ issue_data.id }};
+            fetch(`/remove/${issue_id}`)
+            .then(response => response.text())
+            .then(data => {
+                if (data == "success") {
+                    alert('Issue has been removed');
+                    location.href = "http://127.0.0.1:8000/";
+                }
+                else {
+                    alert("you no longer can remove this issue");
+                }
+            })
+            .catch(error => {
+                console.log('Erroru:', error);
+            });
+        }
+    </script>    
 {% endblock %}
