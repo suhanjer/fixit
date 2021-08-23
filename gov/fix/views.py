@@ -100,8 +100,10 @@ def add_issue(request):
 def issue_page(request, issue_id):
     print('issue page', issue_id)
     issue_data = Issue.objects.get(pk=issue_id)
+    comments = issue_data.conversation.all()
     return render(request, "fix/issue_page.html", {
         "issue_data": issue_data,
+        "comments": comments,
     })
 
 def update_coordinates(request, issue_id):

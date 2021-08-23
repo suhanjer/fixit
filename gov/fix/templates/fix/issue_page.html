@@ -8,17 +8,38 @@
 
 {% block body %}
     <img src="{{ issue_data.image.url }}" alt="image" style="max-height:300px">
-    <h1>{{ issue_data.title }}</h1>
-    {% if issue_data.author == request.user %}
+    <p></p>
+    <h1>Title: {{ issue_data.title }}</h1>
+    <p>Author: {{ issue_data.author }}</p>
+    <p>Status: {{ issue_data.get_status_display }}</p>
+    {% if issue_data.author == request.user and issue_data.status == 'N' %}
         <input id="remove" type="button" value="Remove">
+        <input id="edit" type="button" value="Edit">
+        <input id="save" type="button" value="Save" hidden>
     {% endif %}
-    <p>{{ issue_data.description }}</p>
+    <p id="issue_description">{{ issue_data.description }}</p>
 
     <!-- Map section -->
     <input id="create" type="button" value="Show on map">
-    <input id="update" type="button" value="Update" hidden>
+    {% if issue_data.author == request.user and issue_data.status == 'N' %}
+        <input id="update" type="button" value="Update" hidden>
+    {% endif %}
     <p>Pin coordinates: <div id="location">{{ issue_data.latitude }}, {{ issue_data.longitude }}</div></p>
     <div id="mapBlock"></div>
+
+    <!-- Comments section -->
+    <div>Comments:
+        <div>
+            {% for i in comments %}
+                <p>
+                    Commenter: {{ i.commenter }}
+                    Comment: {{ i.comment}}
+                    Date: {{ i.date }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block scriptend %}
@@ -27,6 +48,8 @@
         var locationInfo = document.getElementById('location');
         var updateButton = document.getElementById('update');
         var removeButton = document.getElementById('remove');
+        var editButton = document.getElementById('edit');
+        var saveButton = document.getElementById('save');
         var lat, lng;
 
         createButton.onclick = function() {
@@ -44,7 +67,7 @@
                     center: [{{ issue_data.latitude }}, {{ issue_data.longitude }}],
                     zoom: 16
                 });
-                if ('{{ user }}' == '{{ issue_data.author }}') {
+                if ('{{ user }}' == '{{ issue_data.author }}' && '{{ issue_data.status }}' == 'N') {
                     marker = DG.marker([{{ issue_data.latitude }}, {{ issue_data.longitude }}], {
                         draggable: true
                     }).addTo(map);
@@ -61,36 +84,60 @@
                 }
             });
         }
-        updateButton.onclick = function() {
-            issue_id = {{ issue_data.id }};
-            fetch(`/update_coordinates/${issue_id}?latitude=${lat}&longitude=${lng}`)
-            .then(response => response.text())
-            .then(data => {
-                if (data == "success") {
-                    alert('Pin position has been updated');
-                    updateButton.setAttribute("hidden", "");
-                }
-            })
-            .catch(error => {
-                console.log('Erroru:', error);
-            });
-        }
-        removeButton.onclick = function() {
-            issue_id = {{ issue_data.id }};
-            fetch(`/remove/${issue_id}`)
-            .then(response => response.text())
-            .then(data => {
-                if (data == "success") {
-                    alert('Issue has been removed');
-                    location.href = "http://127.0.0.1:8000/";
-                }
-                else {
-                    alert("you no longer can remove this issue");
-                }
-            })
-            .catch(error => {
-                console.log('Erroru:', error);
-            });
+
+        if ('{{ user }}' == '{{ issue_data.author }}' && '{{ issue_data.status }}' == 'N') {
+            updateButton.onclick = function() {
+                issue_id = {{ issue_data.id }};
+                fetch(`/update_coordinates/${issue_id}?latitude=${lat}&longitude=${lng}`)
+                .then(response => response.text())
+                .then(data => {
+                    if (data == "success") {
+                        alert('Pin position has been updated');
+                        updateButton.setAttribute("hidden", "");
+                    }
+                })
+                .catch(error => {
+                    console.log('Erroru:', error);
+                });
+            }
+            removeButton.onclick = function() {
+                issue_id = {{ issue_data.id }};
+                fetch(`/remove/${issue_id}`)
+                .then(response => response.text())
+                .then(data => {
+                    if (data == "success") {
+                        alert('Issue has been removed');
+                        location.href = "http://127.0.0.1:8000/";
+                    }
+                    else {
+                        alert("you no longer can remove this issue");
+                    }
+                })
+                .catch(error => {
+                    console.log('Erroru:', error);
+                });
+            }
+            
+            editButton.onclick = function() {
+                //description edit
+                const issue_description_input = document.createElement('textarea');
+                const issue_description = document.querySelector('#issue_description');
+                issue_description_input.type = "text";
+                issue_description_input.value = issue_description.innerHTML;
+
+                issue_description.after(issue_description_input);
+                issue_description.setAttribute('hidden', '');
+                issue_description_input.setAttribute('style', 'width: 90%');
+
+                //edit button hide
+                editButton.setAttribute('hidden', '');
+                saveButton.removeAttribute('hidden');
+
+            }
+
+            saveButton.onclick = function() {
+                console.log("say what");
+            }
         }
     </script>    
 {% endblock %}

@@ -25,6 +25,6 @@ class Issue(models.Model):
 
 class Chat(models.Model):
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="coversation")
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="conversation")
     date = models.DateTimeField(auto_now_add=True)
     comment = models.CharField(max_length=512)
