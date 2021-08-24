@@ -28,6 +28,17 @@
     <div id="mapBlock"></div>
 
     <!-- Comments section -->
+    {% if user.is_authenticated %}
+        <div>Add new comment:
+            <form action="{% url 'add_comment' %}" method="post">
+                {% csrf_token %}
+                <input type="number" name="issue_id" value="{{ issue_data.id }}" hidden>
+                <input type="textarea" style="width: 100%;" name="new_comment" id="new_comment" placeholder="Comment">
+                <input type="submit" value="Comment">
+            </form>
+        </div>
+    {% endif %}
+
     <div>Comments:
         <div>
             {% for i in comments %}

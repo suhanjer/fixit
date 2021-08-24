@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.urls import reverse
 from django.db import IntegrityError
 from .models import *
+from django.contrib.auth.decorators import login_required
 
 from django import forms
 
@@ -82,6 +83,7 @@ def points(request):
         points.append([i.latitude, i.longitude, f'{i.title}', i.id])
     return JsonResponse(points, safe=False)
 
+@login_required
 def add_issue(request):
     if request.method == "POST":
         form = IssueForm(request.POST, request.FILES)
@@ -122,3 +124,11 @@ def remove(request, issue_id):
         return HttpResponse("success")
     else:
         return HttpResponse("fail")
+
+def add_comment(request):
+    if request.method == "POST":
+        issue_id = request.POST["issue_id"]
+        issue = Issue.objects.get(pk=issue_id)
+
+        comment = Chat(commenter=request.user, issue=issue, comment=request.POST['new_comment'])
+        comment.save()
