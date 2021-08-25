@@ -7,17 +7,35 @@
 {% endblock %}
 
 {% block body %}
-    <img src="{{ issue_data.image.url }}" alt="image" style="max-height:300px">
+    <img src="{{ issue_data.image_before.url }}" alt="image" style="max-height:300px">
     <p></p>
     <h1>Title: {{ issue_data.title }}</h1>
     <p>Author: {{ issue_data.author }}</p>
     <p>Status: {{ issue_data.get_status_display }}</p>
+    <p>Executor: {% if issue_data.executor %}{{ issue_data.executor }}{% else %}This issue has no executor yet.{% endif %}</p>
+    
+    <!-- Executor workspace section -->
+    {% if request.user == issue_data.executor or request.user.role == 'M' and issue_data.status == 'N'   %}
+    <div>Set issue stage:
+        <form action="{% url 'status_change' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input name="issue_id" value="{{ issue_data.id }}" hidden>
+            {{ form.as_p }}
+            <input type="submit" value="change status">
+        </form>
+    </div>
+    {% endif %}
+    <!-- End executor workspace section -->
+
+    <!-- Issue edit section -->
     {% if issue_data.author == request.user and issue_data.status == 'N' %}
         <input id="remove" type="button" value="Remove">
         <input id="edit" type="button" value="Edit">
         <input id="save" type="button" value="Save" hidden>
     {% endif %}
-    <p id="issue_description">{{ issue_data.description }}</p>
+    <p id="issue_description">Description {{ issue_data.description }}</p>
+    <p id="issue_response">Response: {% if issue_data.response %} {{ issue_data.response }} {% else %} This issue has no response yet. {% endif %}</p>
+    <!-- End issue edit section -->
 
     <!-- Map section -->
     <input id="create" type="button" value="Show on map">
@@ -26,6 +44,7 @@
     {% endif %}
     <p>Pin coordinates: <div id="location">{{ issue_data.latitude }}, {{ issue_data.longitude }}</div></p>
     <div id="mapBlock"></div>
+    <!-- End map section-->
 
     <!-- Comments section -->
     {% if user.is_authenticated %}

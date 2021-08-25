@@ -14,6 +14,8 @@ urlpatterns = [
     path('update_coordinates/<int:issue_id>', views.update_coordinates, name="update_coordinates"),
     path('remove/<int:issue_id>', views.remove, name="remove"),
     path('add_comment', views.add_comment, name="add_comment"),
+    path('status_change', views.status_change, name="status_change"),
+    path('issue_page', views.issues_list, name="issues_list"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

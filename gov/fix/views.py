@@ -11,12 +11,23 @@ from django import forms
 class IssueForm(forms.ModelForm):
     class Meta:
         model = Issue
-        fields = ('title', 'description', 'latitude', 'longitude', 'image')
+        fields = ('title', 'description', 'latitude', 'longitude', 'image_before')
 
     def CustomSave(self, user):
         data = self.save(commit=False)
         data.author = user
         data.status = 'N'
+        data.save()
+        return data
+
+class IssueUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Issue
+        fields = ('status', 'response', 'image_after')
+
+    def CustomSave(self, user):
+        data = self.save(commit=False)
+        data.executor = user
         data.save()
         return data
 
@@ -87,7 +98,6 @@ def points(request):
 def add_issue(request):
     if request.method == "POST":
         form = IssueForm(request.POST, request.FILES)
-        print(form.errors)
         
         if form.is_valid():
             value = form.CustomSave(request.user)
@@ -100,12 +110,13 @@ def add_issue(request):
         })
 
 def issue_page(request, issue_id):
-    print('issue page', issue_id)
     issue_data = Issue.objects.get(pk=issue_id)
     comments = issue_data.conversation.all()
     return render(request, "fix/issue_page.html", {
         "issue_data": issue_data,
         "comments": comments,
+        "statuses": STATUS,
+        "form": IssueUpdateForm(),
     })
 
 def update_coordinates(request, issue_id):
@@ -132,3 +143,44 @@ def add_comment(request):
 
         comment = Chat(commenter=request.user, issue=issue, comment=request.POST['new_comment'])
         comment.save()
+
+        return HttpResponseRedirect(reverse('issue_page', args=[issue_id]))
+
+def status_change(request):
+    if request.method == "POST":
+        issue_id = request.POST['issue_id']
+
+        issue = Issue.objects.get(pk=issue_id)
+        form = IssueUpdateForm(request.POST, request.FILES, instance=issue)
+
+        form.CustomSave(request.user)
+
+    return HttpResponseRedirect(reverse("issue_page", args=[issue_id]))
+
+def issues_list(request):
+    status = request.GET.get('status')
+    if status == 'N':
+        issues = Issue.objects.filter(status=status)
+        return render(request, "fix/issues_list.html", {
+            "issues": issues,
+        })
+    elif status == 'A':
+        issues = Issue.objects.filter(status=status)
+        return render(request, "fix/issues_list.html", {
+            "issues": issues,
+        })
+    elif status == 'C':
+        issues = Issue.objects.filter(status=status)
+        return render(request, "fix/issues_list.html", {
+            "issues": issues,
+        })
+    elif status == 'R':
+        issues = Issue.objects.filter(status=status)
+        return render(request, "fix/issues_list.html", {
+            "issues": issues,
+        })
+    else:
+        issues = Issue.objects.all()
+        return render(request, "fix/issues_list.html", {
+            "issues": issues,
+        })

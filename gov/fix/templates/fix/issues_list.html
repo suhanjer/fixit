@@ -1,0 +1,16 @@
+{% extends "fix/layout.html" %}
+{% load static %}
+
+{% block head %}
+    <title>Issues list</title>
+{% endblock %}
+
+{% block body %}
+    <h1>List of issues:</h1>
+    <ul>
+        {% for issue in issues %}
+            <li><a href="{% url 'issue_page' issue.id %}">{{ issue.title }}</a></li>
+        {% endfor %}        
+    </ul>
+    
+{% endblock %}

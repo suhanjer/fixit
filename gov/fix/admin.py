@@ -5,7 +5,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ("id", "username", "email", "date_joined")
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "author", "executor", "date_created", "date_closed")
+    list_display = ("id", "title", "status", "author", "executor", "date_created")
 
 class ChatAdmin(admin.ModelAdmin):
     list_display = ("id", "commenter", "issue", "date")
