@@ -25,6 +25,18 @@ class Issue(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "author": self.author.username,
+            "executor": (self.executor.username if self.executor != None else "no executor yet"),
+            "title": self.title,
+            "description": self.description,
+            "response": self.response,
+            "date_created": self.date_created,
+            "status": self.status,
+        }
+
     def __str__(self):
         return self.title
 

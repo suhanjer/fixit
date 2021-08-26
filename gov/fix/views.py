@@ -161,24 +161,20 @@ def issues_list(request):
     status = request.GET.get('status')
     if status == 'N':
         issues = Issue.objects.filter(status=status)
-        return render(request, "fix/issues_list.html", {
-            "issues": issues,
-        })
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)
     elif status == 'A':
         issues = Issue.objects.filter(status=status)
-        return render(request, "fix/issues_list.html", {
-            "issues": issues,
-        })
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)
     elif status == 'C':
         issues = Issue.objects.filter(status=status)
-        return render(request, "fix/issues_list.html", {
-            "issues": issues,
-        })
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)
     elif status == 'R':
         issues = Issue.objects.filter(status=status)
-        return render(request, "fix/issues_list.html", {
-            "issues": issues,
-        })
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)
     else:
         issues = Issue.objects.all()
         return render(request, "fix/issues_list.html", {

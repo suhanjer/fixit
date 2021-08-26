@@ -8,9 +8,43 @@
 {% block body %}
     <h1>List of issues:</h1>
     <ul>
+        <li><a href="" data-status=""class="issues_link">All issues</a></li>
+        <li><a href="" data-status="N" class="issues_link">New issues</a></li>
+        <li><a href="" data-status="A" class="issues_link">Accepted issues</a></li>
+        <li><a href="" data-status="C" class="issues_link">Completed issues</a></li>
+        <li><a href="" data-status="R" class="issues_link">Rejected issues</a></li>
+    </ul>
+    <ul id="list">
         {% for issue in issues %}
             <li><a href="{% url 'issue_page' issue.id %}">{{ issue.title }}</a></li>
         {% endfor %}        
-    </ul>
-    
+    </ul>  
+{% endblock %}
+{% block scriptend %}
+    <script>
+        let issues_link = document.querySelectorAll('.issues_link');
+        issues_link.forEach(function(issue_link) {
+            issue_link.onclick = function() {
+                fetch(`{% url 'issues_list' %}?status=`+this.dataset.status)
+                .then(response => response.json())
+                .then(data => {
+                    const e = document.querySelector('#list');
+                    const list_item = e.querySelectorAll('li');
+                    list_item.forEach(function(li) {
+                        li.remove();
+                    });
+                    data.forEach(function(item) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<a href="/issue_page/${item.id}">${item.title}</a>`;
+                        e.append(li);
+                    });
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+                
+                return false;
+            }
+        });
+    </script>
 {% endblock %}

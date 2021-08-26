@@ -10,19 +10,6 @@
 {% endblock %}
 
 {% block body %}
-    <header>
-        {% if user.is_authenticated %}
-            {{ user }}
-            <a href="{% url 'logout' %}">Logout</a>
-        {% else %}
-            <form action="{% url 'login' %}" method="post">
-                {% csrf_token %}
-                <input type="text" name="username" placeholder="Username">
-                <input type="password" name="password" placeholder="Password">
-                <input type="submit" value="Login">
-            </form>
-        {% endif %}
-    </header>
     <main>
         <div id="map" style="width: 100%; height: 500px;"></div>
         <script>
