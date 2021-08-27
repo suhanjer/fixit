@@ -12,9 +12,26 @@
     <form action="{% url 'register' %}" method="post">
         <input type="text" name="username" placeholder="Username">
         <input type="email" name="email" placeholder="E-mail">
+        <input type="phone" id="phone"  name="phone" value="+7 7" autocomplete="off" maxlength="16"> 
         <input type="password" name="password" placeholder="password">
         <input type="password" name="confirmation" placeholder="confirmation">
         <input type="submit" value="Register">
         {% csrf_token %}
     </form>
+{% endblock %}
+{% block scriptend %}
+    <script>
+        let phone_input = document.querySelector('#phone');
+        phone_input.onkeyup = function() {
+            console.log();
+            if (phone_input.value.length<4) {
+                phone_input.value = "+7 7";
+            }
+        }
+        phone_input.onkeydown = function() {
+            if ((phone_input.value.length == 6 || phone_input.value.length == 10 || phone_input.value.length == 13) && window.event.key != "Backspace") {
+                phone_input.value = phone_input.value.concat(" ");
+            }
+        }
+    </script>
 {% endblock %}

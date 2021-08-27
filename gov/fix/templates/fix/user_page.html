@@ -1,0 +1,27 @@
+{% extends "fix/layout.html" %}
+{% load static %}
+
+{% block head %}
+    <title>{{ user.username }} | User page</title>
+{% endblock %}
+
+{% block body %}
+    <div>
+        {% if user.profile_image %}
+            <img src="{{ user.profile_image.url }}" style="width: 150px;">
+        {% else %}
+            <img src="/media/profile_images/default.png" style="width: 150px;">
+        {% endif %}
+        User: {{ user.username }}
+        Date joined: {{ user.date_joined }}
+        Rank: {{ user.get_rank_display }}
+    </div>
+    <div>
+        <h2>User create issues:</h2>
+        <ul>
+            {% for issue  in issues %}
+                <li><a href="">{{ issue.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

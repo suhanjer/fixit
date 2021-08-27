@@ -2,13 +2,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 STATUS = (('N', 'New'), ('A', 'Accepted'), ('C', 'Complete'), ('R', 'Rejected'))
-RANKS = (('R', 'Rookie'), ('S', 'Seasoned'), ('P', 'Proficient'))
+RANKS = (('R', 'Rookie'), ('S', 'Seasoned'), ('P', 'Pro'))
 ROLE = (('U', 'User'), ('M', 'Moderator'))
 
 # Create your models here.
 class User(AbstractUser):
+    profile_image = models.ImageField(upload_to="profile_images", blank=True, null=True)
     rank = models.CharField(max_length=1, choices=RANKS)
     role = models.CharField(max_length=1, choices=ROLE)
+    phone = models.CharField(max_length=11, blank=True)
 
 class Issue(models.Model):
     author = models.ForeignKey(User, on_delete=models.RESTRICT, related_name="applications")

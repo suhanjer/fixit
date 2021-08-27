@@ -66,6 +66,7 @@ def register_view(request):
         email = request.POST["email"]
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
+        phone = request.POST["phone"]
 
         if password != confirmation:
             return render(request, "fix/registration.html", {
@@ -74,6 +75,7 @@ def register_view(request):
 
         try:
             user = User.objects.create_user(username, email, password)
+            user.phone = phone.replace(" ", "").replace("+", "")
             user.save()
         except IntegrityError:
             return render(request, "fix/register.html", {
@@ -94,7 +96,7 @@ def points(request):
         points.append([i.latitude, i.longitude, f'{i.title}', i.id])
     return JsonResponse(points, safe=False)
 
-@login_required
+@login_required(login_url="/login", redirect_field_name='next')
 def add_issue(request):
     if request.method == "POST":
         form = IssueForm(request.POST, request.FILES)
@@ -180,3 +182,12 @@ def issues_list(request):
         return render(request, "fix/issues_list.html", {
             "issues": issues,
         })
+
+def user_page(request, user_id):
+    user = User.objects.get(pk=user_id)
+
+    issues = Issue.objects.filter(author=user)
+    return render(request, "fix/user_page.html", {
+        "user": user,
+        "issues": issues,
+    })
