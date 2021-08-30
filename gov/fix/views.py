@@ -191,3 +191,24 @@ def user_page(request, user_id):
         "user": user,
         "issues": issues,
     })
+
+def user_page_issues(request, user_id):
+    status = request.GET.get('status')
+    user = User.objects.get(pk=user_id)
+    if status == 'N':
+        issues = user.applications.filter(status=status)
+        data = [issue.serialize() for issue in issues]
+        print(data)
+        return JsonResponse(data, safe=False)
+    elif status == 'A':
+        issues = user.applications.filter(status=status)
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)
+    elif status == 'C':
+        issues = user.applications.filter(status=status)
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)
+    elif status == 'R':
+        issues = user.applications.filter(status=status)
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)

@@ -17,6 +17,7 @@ urlpatterns = [
     path('status_change', views.status_change, name="status_change"),
     path('issue_page', views.issues_list, name="issues_list"),
     path('user_page/<int:user_id>', views.user_page, name="user_page"),
+    path('user_page_issues/<int:user_id>', views.user_page_issues, name="user_page_issues"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

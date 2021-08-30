@@ -12,7 +12,7 @@
         <img src="{{ issue_data.image_after.url }}" alt="image" style="max-height:300px">
     {% endif %}
     <h1>Title: {{ issue_data.title }}</h1>
-    <p>Author: {{ issue_data.author }}</p>
+    <p>Author: <a href="{% url 'user_page' issue_data.author.id %}">{{ issue_data.author }}</a></p>
     <p>Status: {{ issue_data.get_status_display }}</p>
     <p>Executor: {% if issue_data.executor %}{{ issue_data.executor }}{% else %}This issue has no executor yet.{% endif %}</p>
     

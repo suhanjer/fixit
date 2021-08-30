@@ -19,9 +19,43 @@
     <div>
         <h2>User create issues:</h2>
         <ul>
+            <li><a href="" data-status=""class="issues_link">All issues</a></li>
+            <li><a href="" data-status="N" class="issues_link">New issues</a></li>
+            <li><a href="" data-status="A" class="issues_link">Accepted issues</a></li>
+            <li><a href="" data-status="C" class="issues_link">Completed issues</a></li>
+            <li><a href="" data-status="R" class="issues_link">Rejected issues</a></li>
+        </ul>
+        <ul id="list">
             {% for issue  in issues %}
-                <li><a href="">{{ issue.title }}</a></li>
+                <li><a href="{% url 'issue_page' issue.id %}">{{ issue.title }}</a></li>
             {% endfor %}
         </ul>
     </div>
+{% endblock %}
+{% block scriptend %}
+    <script>
+        let links = document.querySelectorAll(".issues_link");
+        links.forEach(function(link) {
+            link.onclick = function() {
+                fetch("{% url 'user_page_issues' user.id %}?status="+this.dataset.status)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const e = document.querySelector('#list');
+                    const list_items = e.querySelectorAll('li');
+                    list_items.forEach(li => li.remove());
+
+                    const li = document.createElement('li');
+                    data.forEach(item => {
+                        li.innerHTML = `<a href="/issue_page/${item.id}">${item.title}</a>`;;
+                        e.append(li);
+                    });
+                })
+                .catch(error => {
+                    console.log("Error:", error);
+                });
+                return false;
+            }
+        });
+    </script>
 {% endblock %}
