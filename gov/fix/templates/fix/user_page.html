@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block head %}
-    <title>{{ user.username }} | User page</title>
+    <title>{{ user_data.username }} | User page</title>
 {% endblock %}
 
 {% block body %}
     <div>
-        {% if user.profile_image %}
-            <img src="{{ user.profile_image.url }}" style="width: 150px;">
+        {% if user_data.profile_image %}
+            <img src="{{ user_data.profile_image.url }}" style="width: 150px;">
         {% else %}
             <img src="/media/profile_images/default.png" style="width: 150px;">
         {% endif %}
-        User: {{ user.username }}
-        Date joined: {{ user.date_joined }}
-        Rank: {{ user.get_rank_display }}
+        User: {{ user_data.username }}
+        Date joined: {{ user_data.date_joined }}
+        Rank: {{ user_data.get_rank_display }}
     </div>
     <div>
         <h2>User create issues:</h2>
@@ -37,17 +37,15 @@
         let links = document.querySelectorAll(".issues_link");
         links.forEach(function(link) {
             link.onclick = function() {
-                fetch("{% url 'user_page_issues' user.id %}?status="+this.dataset.status)
+                fetch("{% url 'user_page_issues' user_data.id %}?status="+this.dataset.status)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     const e = document.querySelector('#list');
                     const list_items = e.querySelectorAll('li');
                     list_items.forEach(li => li.remove());
-
-                    const li = document.createElement('li');
                     data.forEach(item => {
-                        li.innerHTML = `<a href="/issue_page/${item.id}">${item.title}</a>`;;
+                        const li = document.createElement('li');
+                        li.innerHTML = `<a href="/issue_page/${item.id}">${item.title}</a>`;
                         e.append(li);
                     });
                 })

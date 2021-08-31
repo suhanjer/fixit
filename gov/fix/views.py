@@ -184,11 +184,11 @@ def issues_list(request):
         })
 
 def user_page(request, user_id):
-    user = User.objects.get(pk=user_id)
+    user_data = User.objects.get(pk=user_id)
 
-    issues = Issue.objects.filter(author=user)
+    issues = Issue.objects.filter(author=user_data)
     return render(request, "fix/user_page.html", {
-        "user": user,
+        "user_data": user_data,
         "issues": issues,
     })
 
@@ -198,7 +198,6 @@ def user_page_issues(request, user_id):
     if status == 'N':
         issues = user.applications.filter(status=status)
         data = [issue.serialize() for issue in issues]
-        print(data)
         return JsonResponse(data, safe=False)
     elif status == 'A':
         issues = user.applications.filter(status=status)
@@ -210,5 +209,9 @@ def user_page_issues(request, user_id):
         return JsonResponse(data, safe=False)
     elif status == 'R':
         issues = user.applications.filter(status=status)
+        data = [issue.serialize() for issue in issues]
+        return JsonResponse(data, safe=False)
+    else:
+        issues = user.applications.all()
         data = [issue.serialize() for issue in issues]
         return JsonResponse(data, safe=False)
