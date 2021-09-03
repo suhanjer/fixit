@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <div>Добро пожаловать!</div>
+    <div>Log in</div>
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
         <input autofocus type="text", name="username", placeholder="Username">
